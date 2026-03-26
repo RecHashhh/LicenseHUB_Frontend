@@ -1,69 +1,16 @@
-# Frontend - Autodesk License Manager
+# React + Vite
 
-Aplicacion React (Vite) para gestion de licencias Autodesk.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Requisitos
+Currently, two official plugins are available:
 
-- Node.js 20+
-- npm 10+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Variables de entorno
+## React Compiler
 
-Crear `frontend/.env` desde `.env.example`:
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-```env
-VITE_API_URL=http://localhost:8000/api/v1
-```
+## Expanding the ESLint configuration
 
-## Ejecutar en desarrollo
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-## Build de produccion
-
-```powershell
-npm run build
-npm run preview
-```
-
-## Modulos de UI
-
-- Login con JWT
-- Dashboard con indicadores
-- Licencias (tabla, filtros, import/export Excel)
-- Solicitudes (nueva licencia o renovacion)
-- Reportes (descarga de PDF)
-- Informacion de contratacion
-
-## Estructura principal
-
-```text
-src/
-  components/
-    Layout.jsx
-    ProtectedRoute.jsx
-    StatCard.jsx
-  context/
-    AuthContext.jsx
-  pages/
-    LoginPage.jsx
-    DashboardPage.jsx
-    LicensesPage.jsx
-    RequestsPage.jsx
-    ReportsPage.jsx
-    InfoPage.jsx
-  routes/
-    AppRoutes.jsx
-  services/
-    api.js
-    authService.js
-    licenseService.js
-    requestService.js
-    reportService.js
-    userService.js
-    softwareService.js
-```
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
