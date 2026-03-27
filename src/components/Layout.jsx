@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen px-3 py-3 text-slate-800 md:px-6 md:py-6">
       <div className="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-[1320px] grid-cols-1 gap-3 md:grid-cols-[280px_1fr]">
-        <aside className="app-grid-pattern rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 shadow-2xl md:sticky md:top-6 md:h-[calc(100vh-3rem)]">
+        <aside className="app-grid-pattern flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-5 text-slate-100 shadow-2xl md:sticky md:top-6 md:max-h-[calc(100vh-3rem)]">
           <p className="enterprise-kicker">RIPCON</p>
           <h1 className="mt-3 font-heading text-[1.7rem] font-semibold tracking-tight text-white">LicenseHub</h1>
           <p className="mt-1 text-sm text-slate-300">Gestion Autodesk empresarial</p>
@@ -55,7 +55,7 @@ const Layout = ({ children }) => {
             Operacion corporativa activa
           </div>
 
-          <nav className="mt-6 space-y-2">
+          <nav className="mt-6 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
             {menuItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -68,8 +68,12 @@ const Layout = ({ children }) => {
                   }`
                 }
               >
-                <p className="text-sm font-semibold">{item.label}</p>
-                <p className="text-xs opacity-75">{item.helper}</p>
+                {({ isActive }) => (
+                  <>
+                    <p className={`text-sm font-semibold ${isActive ? "text-slate-900" : "text-slate-100"}`}>{item.label}</p>
+                    <p className={`text-xs ${isActive ? "text-slate-600" : "text-slate-300"}`}>{item.helper}</p>
+                  </>
+                )}
               </NavLink>
             ))}
             
@@ -90,15 +94,19 @@ const Layout = ({ children }) => {
                       }`
                     }
                   >
-                    <p className="text-sm font-semibold">{item.label}</p>
-                    <p className="text-xs opacity-75">{item.helper}</p>
+                    {({ isActive }) => (
+                      <>
+                        <p className={`text-sm font-semibold ${isActive ? "text-slate-900" : "text-slate-100"}`}>{item.label}</p>
+                        <p className={`text-xs ${isActive ? "text-slate-600" : "text-slate-300"}`}>{item.helper}</p>
+                      </>
+                    )}
                   </NavLink>
                 ))}
               </>
             )}
           </nav>
 
-          <div className="mt-8 rounded-xl border border-slate-700 bg-slate-800/70 p-4 text-sm">
+          <div className="mt-6 shrink-0 rounded-xl border border-slate-700 bg-slate-800/70 p-4 text-sm">
             <p className="font-semibold text-white">Rol actual: {role}</p>
             <p className="mt-1 text-xs text-slate-300">Sesion segura con permisos por perfil</p>
             <button

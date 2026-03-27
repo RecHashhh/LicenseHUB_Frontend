@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   createLicense,
@@ -30,8 +30,36 @@ const LicensesPage = () => {
   const [licenses, setLicenses] = useState([]);
   const [softwareList, setSoftwareList] = useState([]);
   const [error, setError] = useState("");
+  const [importResult, setImportResult] = useState(null);
   const [filters, setFilters] = useState({ cedula: "", nombre: "", software: "", status: "" });
   const [form, setForm] = useState(emptyForm);
+
+  const softwareNameById = useMemo(
+    () =>
+      Object.fromEntries(
+        softwareList.map((item) => [String(item.id), item.name])
+      ),
+    [softwareList]
+  );
+
+  const formatImportError = (errorItem) => {
+    const mapSoftwareName = (rawMessage) => {
+      if (!rawMessage) return "";
+      return String(rawMessage).replace(/software_id\s*[:=]?\s*(\d+)/gi, (_, id) => {
+        const softwareName = softwareNameById[String(id)];
+        return softwareName ? `software ${softwareName}` : `software ID ${id}`;
+      });
+    };
+
+    if (typeof errorItem === "string") return mapSoftwareName(errorItem);
+    if (errorItem && typeof errorItem === "object") {
+      const row = errorItem.row ?? errorItem.fila;
+      const message = mapSoftwareName(errorItem.message ?? errorItem.error ?? errorItem.detail);
+      if (row && message) return `Fila ${row}: ${message}`;
+      if (message) return String(message);
+    }
+    return "Error de importacion no especificado";
+  };
 
   const load = async () => {
     const payload = {
@@ -83,10 +111,16 @@ const LicensesPage = () => {
   const onImport = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    event.target.value = "";
     setError("");
+    setImportResult(null);
     try {
       const result = await importLicenses(file);
-      setError(result.errors?.length > 0 ? `${result.created} creadas, ${result.errors.length} errores` : `${result.created} licencias importadas correctamente`);
+      const importErrors = Array.isArray(result?.errors) ? result.errors.map(formatImportError) : [];
+      setImportResult({
+        created: Number(result?.created || 0),
+        errors: importErrors
+      });
       await load();
     } catch (err) {
       setError(err.response?.data?.detail || "No fue posible importar el archivo");
@@ -147,6 +181,23 @@ const LicensesPage = () => {
         <p className={`rounded-md px-3 py-2 text-sm ${error.includes("incorrectamente") ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
           {error}
         </p>
+      )}
+
+      {importResult && (
+        <div className={`rounded-md px-3 py-3 text-sm ${importResult.errors.length > 0 ? "bg-amber-50 text-amber-900" : "bg-emerald-100 text-emerald-700"}`}>
+          <p className="font-semibold">
+            {importResult.errors.length > 0
+              ? `${importResult.created} creadas, ${importResult.errors.length} errores`
+              : `${importResult.created} licencias importadas correctamente`}
+          </p>
+          {importResult.errors.length > 0 && (
+            <ul className="mt-2 max-h-52 list-disc space-y-1 overflow-y-auto pl-5 text-xs md:text-sm">
+              {importResult.errors.map((item, index) => (
+                <li key={`${item}-${index}`}>{item}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
 
       <div className="surface-panel grid gap-2 p-4 sm:grid-cols-2">
